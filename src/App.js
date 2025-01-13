@@ -1,8 +1,17 @@
-import "./App.css";
-import DateCounter from "./DateCounter";
+import Header from "./Header";
+import Main from "./Main";
 
 function App() {
-  return <DateCounter />;
+  return (
+    <>
+      <Header />
+
+      <Main>
+        <p>1/5</p>
+        <p>Questions</p>
+      </Main>
+    </>
+  );
 }
 
 export default App;
