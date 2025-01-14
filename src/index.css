@@ -41,11 +41,12 @@ body {
 }
 
 .app-header {
-  width: 66rem;
+  width: 100%;
   margin-bottom: 4rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  /* justify-content: space-between; */
 }
 
 .error {
