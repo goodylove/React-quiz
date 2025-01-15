@@ -6,6 +6,7 @@ import Error from "./Error";
 import StartScreen from "./StartScreen";
 import Question from "./Question";
 import NextButton from "./NextButton";
+import Progress from "./Progress";
 
 const initialState = {
   questions: [],
@@ -45,18 +46,28 @@ function reducer(state, action) {
             : state.points,
       };
 
+    case "nextQuestion":
+      return {
+        ...state,
+        index: state.index + 1,
+        answer: null,
+      };
+
     default:
       throw new Error("Unknown type ");
   }
 }
 function App() {
-  const [{ status, questions, index, answer }, dispatch] = useReducer(
+  const [{ status, questions, index, answer, points }, dispatch] = useReducer(
     reducer,
     initialState
   );
 
   // derived state
   const numberOfQuest = questions.length;
+  const maxPoints = questions.reduce(function (prev, curr) {
+    return prev + curr.points;
+  }, 0);
 
   useEffect(function () {
     fetch("http://localhost:8000/questions")
@@ -80,13 +91,20 @@ function App() {
         )}
         {status === "active" && (
           <>
+            <Progress
+              index={index}
+              numberOfQuest={numberOfQuest}
+              points={points}
+              answer={answer}
+              maxPoints={maxPoints}
+            />
             <Question
               currentQuestion={questions[index]}
               answer={answer}
               dispatch={dispatch}
             />
 
-            <NextButton dispatch={dispatch} />
+            <NextButton dispatch={dispatch} answer={answer} />
           </>
         )}
       </Main>
