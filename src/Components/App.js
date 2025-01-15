@@ -15,6 +15,7 @@ const initialState = {
   index: 0,
   answer: null,
   points: 0,
+  totalPoints: 0,
 };
 
 function reducer(state, action) {
@@ -37,14 +38,13 @@ function reducer(state, action) {
       };
     case "newAnswer":
       const question = state.questions.at(state.index);
-      console.log(question);
+      const isCorrect = action.payload === question.correctOption;
+      // console.log(action.payload, question.correctOption, question.points);
       return {
         ...state,
         answer: action.payload,
-        points:
-          action.payload === question.correctOption
-            ? question.points
-            : state.points,
+        points: isCorrect ? question.points : 0,
+        totalPoints: state.totalPoints + (isCorrect ? question.points : 0),
       };
 
     case "nextQuestion":
@@ -53,22 +53,30 @@ function reducer(state, action) {
         index: state.index + 1,
         answer: null,
       };
-    case "finished":
+    case "finish":
       return {
         ...state,
         status: "finished",
       };
-    // case "reset":
+    case "restart":
+      // return {
+      //   ...state,
+      //   status: "ready",
+      //   index: 0,
+      //   answer: null,
+      //   points: 0,
+      // };
+      return { ...initialState, questions: state.questions, status: "ready" };
+
+    case "restartQuestion":
 
     default:
       throw new Error("Unknown type ");
   }
 }
 function App() {
-  const [{ status, questions, index, answer, points }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
+  const [{ status, questions, index, answer, points, totalPoints }, dispatch] =
+    useReducer(reducer, initialState);
 
   // derived state
   const numberOfQuest = questions.length;
@@ -76,6 +84,7 @@ function App() {
     return prev + curr.points;
   }, 0);
 
+  console.log(totalPoints, points);
   useEffect(function () {
     fetch("http://localhost:8000/questions")
       .then((response) =>
@@ -102,6 +111,7 @@ function App() {
               index={index}
               numberOfQuest={numberOfQuest}
               points={points}
+              totalPoints={totalPoints}
               answer={answer}
               maxPoints={maxPoints}
             />
@@ -120,7 +130,12 @@ function App() {
           </>
         )}
         {status === "finished" && (
-          <FinishedScreen points={points} maxPossiblePoints={maxPoints} />
+          <FinishedScreen
+            // points={points}
+            maxPossiblePoints={maxPoints}
+            dispatch={dispatch}
+            totalPoints={totalPoints}
+          />
         )}
       </Main>
     </>
