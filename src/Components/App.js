@@ -11,6 +11,7 @@ import FinishedScreen from "./FinishedScreen";
 import Footer from "./Footer";
 import Timer from "./Timer";
 
+const SEC_TIMER = 30;
 const initialState = {
   questions: [],
   status: "loading",
@@ -18,7 +19,7 @@ const initialState = {
   answer: null,
   points: 0,
   totalPoints: 0,
-  setTimeRemaining: 10,
+  setTimeRemaining: null,
 };
 
 function reducer(state, action) {
@@ -28,6 +29,7 @@ function reducer(state, action) {
         ...state,
         questions: action.payload,
         status: "ready",
+        setTimeRemaining: state.questions.length * SEC_TIMER,
       };
     case "dataFailed":
       return {
