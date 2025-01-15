@@ -8,6 +8,8 @@ import Question from "./Question";
 import NextButton from "./NextButton";
 import Progress from "./Progress";
 import FinishedScreen from "./FinishedScreen";
+import Footer from "./Footer";
+import Timer from "./Timer";
 
 const initialState = {
   questions: [],
@@ -16,6 +18,7 @@ const initialState = {
   answer: null,
   points: 0,
   totalPoints: 0,
+  setTimeRemaining: 10,
 };
 
 function reducer(state, action) {
@@ -68,15 +71,22 @@ function reducer(state, action) {
       // };
       return { ...initialState, questions: state.questions, status: "ready" };
 
-    case "restartQuestion":
+    case "tick":
+      return {
+        ...state,
+        setTimeRemaining: state.setTimeRemaining - 1,
+        status: state.setTimeRemaining === 0 ? "finished" : state.status,
+      };
 
     default:
       throw new Error("Unknown type ");
   }
 }
 function App() {
-  const [{ status, questions, index, answer, points, totalPoints }, dispatch] =
-    useReducer(reducer, initialState);
+  const [
+    { status, questions, index, answer, points, totalPoints, setTimeRemaining },
+    dispatch,
+  ] = useReducer(reducer, initialState);
 
   // derived state
   const numberOfQuest = questions.length;
@@ -120,13 +130,15 @@ function App() {
               answer={answer}
               dispatch={dispatch}
             />
-
-            <NextButton
-              dispatch={dispatch}
-              answer={answer}
-              index={index}
-              numberOfQuestions={numberOfQuest}
-            />
+            <Footer>
+              <Timer setTimeRemaining={setTimeRemaining} dispatch={dispatch} />
+              <NextButton
+                dispatch={dispatch}
+                answer={answer}
+                index={index}
+                numberOfQuestions={numberOfQuest}
+              />
+            </Footer>
           </>
         )}
         {status === "finished" && (
