@@ -71,7 +71,12 @@ function reducer(state, action) {
       //   answer: null,
       //   points: 0,
       // };
-      return { ...initialState, questions: state.questions, status: "ready" };
+      return {
+        ...initialState,
+        questions: state.questions,
+        status: "ready",
+        setTimeRemaining: state.questions.length * SEC_TIMER,
+      };
 
     case "tick":
       return {
@@ -96,7 +101,6 @@ function App() {
     return prev + curr.points;
   }, 0);
 
-  console.log(totalPoints, points);
   useEffect(function () {
     fetch("http://localhost:8000/questions")
       .then((response) =>
